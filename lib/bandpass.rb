@@ -3,19 +3,24 @@ class Bandpass
   class NonIntegerInput < RuntimeError; end
   class NegativeIntegerInput < RuntimeError; end
 
-  HIGH_PASS_FREQUENCY = 1000
-  LOW_PASS_FREQUENCY = 40
+  attr_writer :high_pass_frequency, :low_pass_frequency
+
+  DEFAULT_HIGH_PASS_FREQUENCY = 1000
+  DEFAULT_LOW_PASS_FREQUENCY  = 40
+
+  def initialize
+    @high_pass_frequency = DEFAULT_HIGH_PASS_FREQUENCY
+    @low_pass_frequency = DEFAULT_LOW_PASS_FREQUENCY
+  end
 
   def filter(input)
-    raise NonIntegerInput if non_integer?(input)
-    raise NegativeIntegerInput if negative_integer?(input)
-    raise NoInput if input.empty?
+    validate(input)
 
     input.map do |frequency|
-      if frequency < LOW_PASS_FREQUENCY
-        LOW_PASS_FREQUENCY
-      elsif frequency > HIGH_PASS_FREQUENCY
-        HIGH_PASS_FREQUENCY
+      if frequency < @low_pass_frequency
+        @low_pass_frequency
+      elsif frequency > @high_pass_frequency
+        @high_pass_frequency
       else
         frequency
       end
@@ -23,6 +28,12 @@ class Bandpass
   end
 
   private
+
+  def validate(input)
+    raise NoInput, input if input.nil? || input.empty?
+    raise NonIntegerInput, input if non_integer?(input)
+    raise NegativeIntegerInput, input if negative_integer?(input)
+  end
 
   def negative_integer?(input)
     input.index(&:negative?)
