@@ -2,15 +2,19 @@ require_relative '../lib/bandpass'
 
 describe Bandpass do
   context 'given invalid input' do
+    def expect_no_input_error
+      expect { yield }.to raise_error Bandpass::NoInput
+    end
+
     context 'given an empty array' do
       it 'raises a no input error' do
-        expect { subject.filter([]) }.to raise_error Bandpass::NoInput
+        expect_no_input_error { subject.filter([]) }
       end
     end
 
     context 'given nil' do
       it 'raises a no input error' do
-        expect { subject.filter(nil) }.to raise_error Bandpass::NoInput
+        expect_no_input_error { subject.filter(nil) }
       end
     end
 
@@ -28,9 +32,24 @@ describe Bandpass do
   end
 
   context 'given valid input' do
+    def expect_invalid_pass_frequency
+      expect { yield }.to raise_error Bandpass::InvalidPassFrequency
+    end
+
     context 'given custom high pass of 500' do
+      before :each do
+        subject.high_pass = 500
+      end
+
+      it 'cannot set low pass equal to or above high pass' do
+        expect_invalid_pass_frequency { subject.low_pass = 500 }
+      end
+
+      it 'cannot set low pass to less than 1' do
+        expect_invalid_pass_frequency { subject.low_pass = 0 }
+      end
+
       it 'adjusts high pass frequencies to 500' do
-        subject.high_pass_frequency = 500
         expect(subject.filter([499, 500, 501, 502])).to eq [499, 500, 500, 500]
       end
     end
@@ -41,8 +60,15 @@ describe Bandpass do
       end
 
       context 'given a custom low pass of 100' do
+        before :each do
+          subject.low_pass = 100
+        end
+
+        it 'cannot set high pass equal to or below low pass' do
+          expect_invalid_pass_frequency { subject.high_pass = 100 }
+        end
+
         it 'adjusts low pass frequencies to 100' do
-          subject.low_pass_frequency = 100
           expect(subject.filter([98, 99, 100, 101])).to eq [100, 100, 100, 101]
         end
       end

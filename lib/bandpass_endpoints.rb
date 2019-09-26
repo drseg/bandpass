@@ -11,8 +11,8 @@ class FilterEndpoint
   def initialize(params)
     @params = params
     @bandpass = Bandpass.new
-    @bandpass.high_pass_frequency = high_pass
-    @bandpass.low_pass_frequency = low_pass
+    @bandpass.high_pass = high_pass
+    @bandpass.low_pass = low_pass
   end
 
   def filter

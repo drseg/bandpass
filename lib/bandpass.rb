@@ -2,8 +2,7 @@ class Bandpass
   class NoInput < RuntimeError; end
   class NonIntegerInput < RuntimeError; end
   class NegativeIntegerInput < RuntimeError; end
-
-  attr_writer :high_pass_frequency, :low_pass_frequency
+  class InvalidPassFrequency < RuntimeError; end
 
   DEFAULT_HIGH_PASS_FREQUENCY = 1000
   DEFAULT_LOW_PASS_FREQUENCY  = 40
@@ -27,7 +26,27 @@ class Bandpass
     end
   end
 
+  def low_pass=(frequency)
+    validate_low_pass(frequency)
+
+    @low_pass_frequency = frequency
+  end
+
+  def high_pass=(frequency)
+    validate_high_pass(frequency)
+
+    @high_pass_frequency = frequency
+  end
+
   private
+
+  def validate_low_pass(frequency)
+    raise InvalidPassFrequency, frequency if frequency >= @high_pass_frequency || frequency < 1
+  end
+
+  def validate_high_pass(frequency)
+    raise InvalidPassFrequency, frequency if frequency <= @low_pass_frequency
+  end
 
   def validate(input)
     raise NoInput, input if input.nil? || input.empty?
