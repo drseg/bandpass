@@ -8,44 +8,44 @@ class Bandpass
   DEFAULT_LOW_PASS_FREQUENCY  = 40
 
   def initialize
-    @high_pass_frequency = DEFAULT_HIGH_PASS_FREQUENCY
-    @low_pass_frequency = DEFAULT_LOW_PASS_FREQUENCY
+    @high_pass = DEFAULT_HIGH_PASS_FREQUENCY
+    @low_pass  = DEFAULT_LOW_PASS_FREQUENCY
   end
 
   def filter(input)
     validate(input)
 
-    input.map do |frequency|
-      if frequency < @low_pass_frequency
-        @low_pass_frequency
-      elsif frequency > @high_pass_frequency
-        @high_pass_frequency
+    input.map do |freq|
+      if freq < @low_pass
+        @low_pass
+      elsif freq > @high_pass
+        @high_pass
       else
-        frequency
+        freq
       end
     end
   end
 
-  def low_pass=(frequency)
-    validate_low_pass(frequency)
+  def low_pass=(freq)
+    validate_low_pass(freq)
 
-    @low_pass_frequency = frequency
+    @low_pass = freq
   end
 
-  def high_pass=(frequency)
-    validate_high_pass(frequency)
+  def high_pass=(freq)
+    validate_high_pass(freq)
 
-    @high_pass_frequency = frequency
+    @high_pass = freq
   end
 
   private
 
-  def validate_low_pass(frequency)
-    raise InvalidPassFrequency, frequency if frequency >= @high_pass_frequency || frequency < 1
+  def validate_low_pass(freq)
+    raise InvalidPassFrequency, freq if freq >= @high_pass || freq < 1
   end
 
-  def validate_high_pass(frequency)
-    raise InvalidPassFrequency, frequency if frequency <= @low_pass_frequency
+  def validate_high_pass(freq)
+    raise InvalidPassFrequency, freq if freq <= @low_pass
   end
 
   def validate(input)

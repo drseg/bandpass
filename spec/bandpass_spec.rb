@@ -19,8 +19,14 @@ describe Bandpass do
     end
 
     context 'given array containing non-integers' do
+      def expect_non_integer_error
+        expect { yield }.to raise_error Bandpass::NonIntegerInput
+      end
+
       it 'raises a non integer input error' do
-        expect { subject.filter([1, 2, 3, 'x']) }.to raise_error Bandpass::NonIntegerInput
+        expect_non_integer_error { subject.filter([1, 2, 3, 'x']) }
+        expect_non_integer_error { subject.filter([1, 2, 3, 1.1]) }
+        expect_non_integer_error { subject.filter([1, 2, 3, nil]) }
       end
     end
 
@@ -43,6 +49,7 @@ describe Bandpass do
 
       it 'cannot set low pass equal to or above high pass' do
         expect_invalid_pass_frequency { subject.low_pass = 500 }
+        expect_invalid_pass_frequency { subject.low_pass = 600 }
       end
 
       it 'cannot set low pass to less than 1' do
@@ -66,6 +73,7 @@ describe Bandpass do
 
         it 'cannot set high pass equal to or below low pass' do
           expect_invalid_pass_frequency { subject.high_pass = 100 }
+          expect_invalid_pass_frequency { subject.high_pass = 50 }
         end
 
         it 'adjusts low pass frequencies to 100' do
