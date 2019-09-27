@@ -10,7 +10,7 @@ describe 'Bandpass Endpoint' do
     BandpassEndpoints
   end
 
-  describe 'filter endpoint' do
+  describe '/filter' do
     context 'given frequencies 80, 90, 100, 110, 120' do
       context 'given lower limit of 90' do
         context 'given upper limit of 110' do
